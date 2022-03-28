@@ -1,8 +1,7 @@
-﻿using API_Auth.Data;
+﻿using API_Auth.Context;
 using API_Auth.DTO;
 using API_Auth.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace API_Auth.Controllers
 {
@@ -10,9 +9,9 @@ namespace API_Auth.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly AppDbContext _context;
 
-        public UserController(DataContext context)
+        public UserController(AppDbContext context)
         {
             _context = context;
         }
@@ -40,7 +39,7 @@ namespace API_Auth.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
+        [Route("Register")]
         public async Task<ActionResult<dynamic>> Register([FromBody] UserDTO user)
         {
             if (_context.Users.Any(u => u.Username == user.Username))

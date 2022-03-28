@@ -1,9 +1,9 @@
 ﻿using API_Auth.DTO;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_Auth.Data
+namespace API_Auth.Context
 {
-    public class DataContext : DbContext
+    public class AppDbContext : DbContext
     {
         public DbSet<UserDTO> Users { get; set; }
 

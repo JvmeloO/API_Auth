@@ -1,14 +1,9 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using API_Auth.Context;
+using API_Auth.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API_Auth.DTO;
-using API_Auth.Data;
-using Microsoft.AspNetCore.Authorization;
 
 namespace API_Auth.Controllers
 {
@@ -16,9 +11,9 @@ namespace API_Auth.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly AppDbContext _context;
 
-        public RoleController(DataContext context)
+        public RoleController(AppDbContext context)
         {
             _context = context;
         }
