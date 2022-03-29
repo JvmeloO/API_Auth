@@ -1,5 +1,9 @@
 using API_Auth;
 using API_Auth.Context;
+using API_Auth.Repositories.Abstract;
+using API_Auth.Repositories.Concrete;
+using API_Auth.Services.Abstract;
+using API_Auth.Services.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,7 +17,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<AppDbContext>();
+//builder.Services.AddScoped<AppDbContext>();
+
+//builder.Services.AddScoped<ITokenService, TokenService>();
+//builder.Services.AddScoped<IEncryptService, EncryptService>();
+
+//builder.Services.AddTransient<IUserRepository, UserRepository>();
+//builder.Services.AddTransient<IRoleRepository, RoleRepository>();
+//builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
 builder.Services.AddAuthentication(x => 

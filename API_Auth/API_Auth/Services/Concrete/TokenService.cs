@@ -1,14 +1,30 @@
-﻿using API_Auth.DTO;
+﻿using API_Auth.Context;
+using API_Auth.Models.Entities;
+using API_Auth.Repositories.Abstract;
+using API_Auth.Repositories.Concrete;
+using API_Auth.Services.Abstract;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace API_Auth.Services
+namespace API_Auth.Services.Concrete
 {
-    public static class TokenService
+    public class TokenService : ITokenService
     {
-        public static string GenerateToken(UserDTO user) 
+        private readonly IRoleRepository _roleRepository;
+
+        public TokenService()
+        {
+            _roleRepository = new RoleRepository(new AppDbContext());
+        }
+
+        public TokenService(IRoleRepository roleRepository)
+        {
+            _roleRepository = roleRepository;
+        }
+
+        public string GenerateToken(User user) 
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
@@ -23,18 +39,15 @@ namespace API_Auth.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private static ClaimsIdentity GetClaimsIdentity(UserDTO user) 
+        private ClaimsIdentity GetClaimsIdentity(User user) 
         { 
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.Username));
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            if (user.UserRoles != null) 
-            {
-                foreach (var role in user.UserRoles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Role_Name));
-                }
-            }
+            var userRoles = _roleRepository.GetRolesByUserId(user.UserId);
+            if (userRoles != null)
+                claims.AddRange(from role in userRoles
+                                select (new Claim(ClaimTypes.Role, role.RoleName)));
 
             return new ClaimsIdentity(claims.ToArray());
         }

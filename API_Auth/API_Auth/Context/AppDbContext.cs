@@ -1,15 +1,15 @@
-﻿using API_Auth.DTO;
+﻿using API_Auth.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Auth.Context
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<UserDTO> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
-        public DbSet<RoleDTO> Roles { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
-        public DbSet<UserRoleDTO> UserRoles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,26 +20,27 @@ namespace API_Auth.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserDTO>().HasKey(u => u.User_Id);
+            modelBuilder.Entity<User>().HasKey(u => u.UserId);
+            modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
 
-            modelBuilder.Entity<RoleDTO>().HasKey(r => r.Role_Id);
+            modelBuilder.Entity<Role>().HasKey(r => r.RoleId);
 
-            modelBuilder.Entity<UserRoleDTO>().HasKey(ur =>
+            modelBuilder.Entity<UserRole>().HasKey(ur =>
             new
             {
-                ur.User_Id, ur.Role_Id
+                ur.UserId, ur.RoleId
             });
 
             // Relationships Many to Many
-            modelBuilder.Entity<UserRoleDTO>()
+            modelBuilder.Entity<UserRole>()
                 .HasOne(u => u.User)
                 .WithMany(ur => ur.UserRoles)
-                .HasForeignKey(u => u.User_Id);
+                .HasForeignKey(u => u.UserId);
 
-            modelBuilder.Entity<UserRoleDTO>()
+            modelBuilder.Entity<UserRole>()
                .HasOne(u => u.Role)
                .WithMany(ur => ur.UserRoles)
-               .HasForeignKey(u => u.Role_Id);
+               .HasForeignKey(u => u.RoleId);
         }
     }
 }

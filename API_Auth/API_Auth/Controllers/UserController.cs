@@ -1,7 +1,12 @@
 ﻿using API_Auth.Context;
-using API_Auth.DTO;
-using API_Auth.Services;
+using API_Auth.Models.DTOs;
+using API_Auth.Models.Entities;
+using API_Auth.Repositories.Abstract;
+using API_Auth.Repositories.Concrete;
+using API_Auth.Services.Abstract;
+using API_Auth.Services.Concrete;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API_Auth.Controllers
 {
@@ -9,48 +14,48 @@ namespace API_Auth.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IEncryptService _encryptService;
 
-        public UserController(AppDbContext context)
+        [ActivatorUtilitiesConstructor]
+        public UserController()
         {
-            _context = context;
+            _userRepository = new UserRepository(new AppDbContext());
+            _encryptService = new EncryptService();
         }
 
-        [HttpPost]
-        [Route("Login")]
-        public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] UserDTO user)
+        public UserController(IUserRepository userRepository, IEncryptService encryptService)
         {
-            var userLogin = _context.Users.FirstOrDefault(u => u.Username == user.Username);
-
-            if (userLogin == null)
-                return NotFound(new { message = "Usuário não cadastrado" });
-
-            if (EncryptService.EncryptPassword(user.Password) != userLogin.Password)
-                return BadRequest(new { message = "Senha inválida" });
-
-            var token = TokenService.GenerateToken(userLogin);
-
-            return new
-            {
-                Username = userLogin.Username,
-                Email = userLogin.Email,
-                token = token
-            };
+            _userRepository = userRepository;
+            _encryptService = encryptService;
         }
 
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult<dynamic>> Register([FromBody] UserDTO user)
+        public IActionResult Register([FromBody] UserRegisterDTO userRegisterDTO)
         {
-            if (_context.Users.Any(u => u.Username == user.Username))
+            if (_userRepository.GetUserByUsername(userRegisterDTO.Username) != null)
                 return BadRequest(new { message = "Nome de usuário já usado" });
 
-            var passwordEncrypted = EncryptService.EncryptPassword(user.Password);
-            user.Password = passwordEncrypted;
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var passwordEncrypted = _encryptService.EncryptPassword(userRegisterDTO.Password);
 
-            return StatusCode(201);
+                var user = new User 
+                {
+                    Username = userRegisterDTO.Username,
+                    Email = userRegisterDTO.Email,
+                    Password = passwordEncrypted
+                };
+                _userRepository.InsertUser(user);
+                _userRepository.Save();
+
+                return StatusCode((int)HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-namespace API_Auth.DTO
+namespace API_Auth.Models.Entities
 {
-    public class UserDTO
+    public class User
     {
-
-        public int User_Id { get; set; }
+        public int UserId { get; set; }
 
         [MaxLength(20)]
         public string Username { get; set; }
@@ -17,7 +15,7 @@ namespace API_Auth.DTO
         [MaxLength(30)]
         public string Password { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<UserRoleDTO>? UserRoles { get; set; }
+        
+        public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

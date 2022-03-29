@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_Auth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220328140928_Migration01")]
+    [Migration("20220329013642_Migration01")]
     partial class Migration01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,31 +23,31 @@ namespace API_Auth.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("API_Auth.DTO.RoleDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.Role", b =>
                 {
-                    b.Property<int>("Role_Id")
+                    b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Role_Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"), 1L, 1);
 
-                    b.Property<string>("Role_Name")
+                    b.Property<string>("RoleName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("Role_Id");
+                    b.HasKey("RoleId");
 
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("API_Auth.DTO.UserDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.User", b =>
                 {
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("User_Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -64,37 +64,40 @@ namespace API_Auth.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("User_Id");
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("API_Auth.DTO.UserRoleDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.UserRole", b =>
                 {
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Role_Id")
+                    b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.HasKey("User_Id", "Role_Id");
+                    b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("Role_Id");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("API_Auth.DTO.UserRoleDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.UserRole", b =>
                 {
-                    b.HasOne("API_Auth.DTO.RoleDTO", "Role")
+                    b.HasOne("API_Auth.Models.Entities.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Role_Id")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API_Auth.DTO.UserDTO", "User")
+                    b.HasOne("API_Auth.Models.Entities.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("User_Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -103,12 +106,12 @@ namespace API_Auth.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API_Auth.DTO.RoleDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("API_Auth.DTO.UserDTO", b =>
+            modelBuilder.Entity("API_Auth.Models.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
                 });
