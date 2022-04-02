@@ -31,14 +31,21 @@ namespace API_Auth.API.Controllers
             if (_roleRepository.GetRoleByRoleName(roleCreateDTO.RoleName) != null)
                 return BadRequest(new { message = "Função já existe" });
 
-            var role = new Role 
+            try
             {
-                RoleName = roleCreateDTO.RoleName,
-            };
+                var role = new Role
+                {
+                    RoleName = roleCreateDTO.RoleName,
+                };
 
-            _roleRepository.InsertRole(role);
-            _roleRepository.Save();
-            return StatusCode((int)HttpStatusCode.Created);
+                _roleRepository.InsertRole(role);
+                _roleRepository.Save();
+                return StatusCode((int)HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]
