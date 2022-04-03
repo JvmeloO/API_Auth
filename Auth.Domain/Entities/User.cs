@@ -12,7 +12,7 @@ namespace Auth.Domain.Entities
         [MaxLength(50)]
         public string Email { get; set; }
 
-        [MaxLength(30)]
+        [MaxLength(100)]
         public string Password { get; set; }
 
         

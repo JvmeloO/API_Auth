@@ -40,6 +40,7 @@ namespace Auth.API.Controllers
 
                 _roleRepository.InsertRole(role);
                 _roleRepository.Save();
+
                 return StatusCode((int)HttpStatusCode.Created);
             }
             catch (Exception ex)
@@ -72,6 +73,7 @@ namespace Auth.API.Controllers
                 }
 
                 _userRoleRepository.Save();
+
                 return Ok();
             }
             catch (Exception ex)

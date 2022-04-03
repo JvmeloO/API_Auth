@@ -31,7 +31,7 @@ namespace Auth.API.Controllers
                 if (user == null)
                     return NotFound(new { message = "Usuário não cadastrado" });
 
-                if (_encryptService.EncryptPassword(userAuthDTO.Password) != user.Password)
+                if (!_encryptService.VerifyPassword(userAuthDTO.Password, user.Password))
                     return BadRequest(new { message = "Senha inválida" });
 
                 var token = _tokenService.GenerateToken(user);
