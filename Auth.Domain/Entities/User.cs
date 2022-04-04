@@ -1,21 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Auth.Domain.Entities
+﻿namespace Auth.Domain.Entities
 {
-    public class User
+    public partial class User
     {
+        public User()
+        {
+            Roles = new HashSet<Role>();
+        }
+
         public int UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
 
-        [MaxLength(20)]
-        public string Username { get; set; }
-
-        [MaxLength(50)]
-        public string Email { get; set; }
-
-        [MaxLength(100)]
-        public string Password { get; set; }
-
-        
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
     }
 }

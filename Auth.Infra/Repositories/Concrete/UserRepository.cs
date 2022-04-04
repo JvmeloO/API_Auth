@@ -1,4 +1,4 @@
-﻿using Auth.Infra.Context;
+﻿using Auth.Infra.DbContexts;
 using Auth.Infra.Repositories.Abstract;
 using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -7,31 +7,45 @@ namespace Auth.Infra.Repositories.Concrete
 {
     public class UserRepository : IUserRepository, IDisposable
     {
-        private readonly AppDbContext _context;
+        private readonly authdbContext _context;
 
-        public UserRepository(AppDbContext context)
+        public UserRepository(authdbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<User> GetUsers()
-        {
-            return _context.Users.ToList();
-        }
-
         public User GetUserByUsername(string username)
-        { 
-            return _context.Users.SingleOrDefault(x => x.Username == username);
+        {
+            return _context.Users.SingleOrDefault(u => u.Username == username);
         }
 
-        public User GetUserById(int userId)
+        public int GetUserIdByUsername(string username)
         {
-            return _context.Users.Find(userId);
+            return GetUserByUsername(username).UserId;
         }
 
         public void InsertUser(User user)
         {
             _context.Users.Add(user);
+        }
+
+        public void InsertRolesToUser(int userId, List<int> RolesIds) 
+        {
+            var userRoles = new User { UserId = userId };
+            _context.Users.Add(userRoles);
+            _context.Users.Attach(userRoles);
+
+            var roleList = new List<Role>();
+            foreach (var roleId in RolesIds)
+            {
+                var role = new Role { RoleId = roleId };
+                _context.Roles.Add(role);
+                _context.Roles.Attach(role);
+                roleList.Add(role);
+            }
+
+            userRoles.Roles = roleList;
+            _context.Users.Add(userRoles);
         }
 
         public void DeleteUser(int userId)
@@ -54,14 +68,10 @@ namespace Auth.Infra.Repositories.Concrete
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
-            {
+            if (!disposed)
                 if (disposing)
-                {
                     _context.Dispose();
-                }
-            }
-            this.disposed = true;
+            disposed = true;
         }
 
         public void Dispose()

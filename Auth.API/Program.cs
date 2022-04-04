@@ -1,11 +1,11 @@
-using Auth.API;
 using Auth.Business.Services.Abstract;
 using Auth.Business.Services.Concrete;
 using Auth.Domain.Configurations;
-using Auth.Infra.Context;
+using Auth.Infra.DbContexts;
 using Auth.Infra.Repositories.Abstract;
 using Auth.Infra.Repositories.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -18,16 +18,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<AppDbContext>();
+builder.Services.AddDbContext<authdbContext>(options =>
+                options.UseSqlServer(builder.Configuration["ConnectionStrings:authdb"]));
 
 builder.Services.AddScoped<IEncryptService, EncryptService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddTransient<IRoleRepository, RoleRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
-var key = Encoding.ASCII.GetBytes(Settings.Secret);
+var key = Encoding.ASCII.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services.AddAuthentication(x => 
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -49,8 +49,8 @@ builder.Services.AddSingleton<BaseConfigurations>(op =>
 {
     var obj = new BaseConfigurations
     {
-        ConnectionString = Settings.ConnectionString,
-        SecretKey = Settings.Secret
+        ConnectionString_authdb = builder.Configuration["ConnectionStrings:authdb"],
+        SecretKey = builder.Configuration["SecretKey"]
     };
 
     return obj;

@@ -31,12 +31,13 @@ namespace Auth.API.Controllers
             {
                 var passwordEncrypted = _encryptService.EncryptPassword(userRegisterDTO.Password);
 
-                var user = new User 
+                var user = new User
                 {
                     Username = userRegisterDTO.Username,
                     Email = userRegisterDTO.Email,
                     Password = passwordEncrypted
                 };
+
                 _userRepository.InsertUser(user);
                 _userRepository.Save();
 

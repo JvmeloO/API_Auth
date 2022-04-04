@@ -20,7 +20,7 @@ namespace Auth.Business.Services.Concrete
             _config = config;
         }
 
-        public string GenerateToken(User user) 
+        public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_config.SecretKey);
@@ -30,13 +30,13 @@ namespace Auth.Business.Services.Concrete
                 Expires = DateTime.UtcNow.AddHours(8),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-            
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
-        private ClaimsIdentity GetClaimsIdentity(User user) 
-        { 
+        private ClaimsIdentity GetClaimsIdentity(User user)
+        {
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.Username));
             claims.Add(new Claim(ClaimTypes.Email, user.Email));

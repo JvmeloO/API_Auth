@@ -4,10 +4,10 @@ namespace Auth.Infra.Repositories.Abstract
 {
     public interface IUserRepository : IDisposable
     {
-        IEnumerable<User> GetUsers();
         User GetUserByUsername(string username);
-        User GetUserById(int userId);
+        int GetUserIdByUsername(string username);
         void InsertUser(User user);
+        void InsertRolesToUser(int userId, List<int> RolesIds);
         void DeleteUser(int userId);
         void UpdateUser(User user);
         void Save();

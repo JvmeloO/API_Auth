@@ -1,4 +1,4 @@
-﻿using Auth.Infra.Context;
+﻿using Auth.Infra.DbContexts;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +7,9 @@ namespace Auth.Infra.Repositories.Concrete
 {
     public class RoleRepository : IRoleRepository, IDisposable
     {
-        private readonly AppDbContext _context;
+        private readonly authdbContext _context;
 
-        public RoleRepository(AppDbContext context) 
+        public RoleRepository(authdbContext context)
         {
             _context = context;
         }
@@ -19,21 +19,17 @@ namespace Auth.Infra.Repositories.Concrete
             return _context.Roles.ToList();
         }
 
-        public IEnumerable<Role> GetRolesByUserId(int userId) 
+        public IEnumerable<Role> GetRolesByUserId(int userId)
         {
-            var userRoles = _context.UserRoles.ToList().Where(ur => ur.UserId == userId);
-            var roles = (from role in userRoles
-                         select GetRoleById(role.RoleId));
-
-            return roles;
+            return _context.Roles.Where(r => r.Users.Any(u => u.UserId == userId));
         }
 
-        public Role GetRoleByRoleName(string roleName) 
+        public Role GetRoleByRoleName(string roleName)
         {
-            return _context.Roles.SingleOrDefault(x => x.RoleName == roleName);
+            return _context.Roles.SingleOrDefault(r => r.RoleName == roleName);
         }
 
-        public Role GetRoleById(int roleId)
+        public Role GetRoleByRoleId(int roleId)
         {
             return _context.Roles.Find(roleId);
         }
@@ -63,14 +59,10 @@ namespace Auth.Infra.Repositories.Concrete
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
-            {
+            if (!disposed)
                 if (disposing)
-                {
                     _context.Dispose();
-                }
-            }
-            this.disposed = true;
+            disposed = true;
         }
 
         public void Dispose()

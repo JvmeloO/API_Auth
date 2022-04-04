@@ -7,7 +7,7 @@ namespace Auth.Infra.Repositories.Abstract
         IEnumerable<Role> GetRoles();
         IEnumerable<Role> GetRolesByUserId(int userId);
         Role GetRoleByRoleName(string roleName);
-        Role GetRoleById(int roleId);
+        Role GetRoleByRoleId(int roleId);
         void InsertRole(Role role);
         void DeleteRole(int roleId);
         void UpdateRole(Role role);

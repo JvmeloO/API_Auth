@@ -13,14 +13,28 @@ namespace Auth.API.Controllers
     public class AccessManagementController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
         private readonly IRoleRepository _roleRepository;
 
-        public AccessManagementController(IUserRepository userRepository, IUserRoleRepository userRoleRepository, IRoleRepository roleRepository)
+        public AccessManagementController(IUserRepository userRepository, IRoleRepository roleRepository)
         {
             _userRepository = userRepository;
-            _userRoleRepository = userRoleRepository;
             _roleRepository = roleRepository;
+        }
+
+        [HttpGet]
+        [Route("Roles")]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult GetRoles() 
+        {
+            return Ok(_roleRepository.GetRoles());
+        }
+
+        [HttpGet]
+        [Route("Roles/User/{username}")]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult GetRolesByUsername(string username)
+        {
+            return Ok(_roleRepository.GetRolesByUserId(_userRepository.GetUserIdByUsername(username)));
         }
 
         [HttpPost]
@@ -50,9 +64,9 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("Role/Grant-User")]
+        [Route("Roles/Grant-User")]
         [Authorize(Roles = "Administrador")]
-        public IActionResult GrantRoleUser([FromBody] UserRolesDTO userRolesDTO)
+        public IActionResult GrantRolesUser([FromBody] UserRolesDTO userRolesDTO)
         {
             var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
 
@@ -61,18 +75,8 @@ namespace Auth.API.Controllers
 
             try
             {
-                foreach (var roleId in userRolesDTO.RoleId)
-                {
-                    var userRole = new UserRole
-                    {
-                        UserId = user.UserId,
-                        RoleId = roleId
-                    };
-
-                    _userRoleRepository.InsertUserRole(userRole);
-                }
-
-                _userRoleRepository.Save();
+                _userRepository.InsertRolesToUser(user.UserId, userRolesDTO.RolesIds);
+                _userRepository.Save();
 
                 return Ok();
             }
@@ -81,5 +85,26 @@ namespace Auth.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        //[HttpPost]
+        //[Route("Roles/Dismiss-User")]
+        //[Authorize(Roles = "Administrador")]
+        //public IActionResult DismissRolesUser([FromBody] UserRolesDTO userRolesDTO)
+        //{
+        //    if (_userRepository.GetUserByUsername(userRolesDTO.Username) == null)
+        //        return NotFound(new { message = "Usuário não cadastrado" });
+
+        //    try
+        //    {
+        //        _userRepository.InsertRolesToUser(userRolesDTO.Username, userRolesDTO.RolesIds);
+        //        _userRepository.Save();
+
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+        //    }
+        //}
     }
 }

@@ -17,7 +17,7 @@ namespace Auth.API.Controllers
         public AuthController(IUserRepository userRepository, ITokenService tokenService, IEncryptService encryptService)
         {
             _userRepository = userRepository;
-            _tokenService= tokenService;
+            _tokenService = tokenService;
             _encryptService = encryptService;
         }
 

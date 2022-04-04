@@ -7,6 +7,6 @@ namespace Auth.API.Models.DTOs
         [MaxLength(20)]
         public string Username { get; set; }
 
-        public List<int> RoleId { get; set; }
+        public List<int> RolesIds { get; set; }
     }
 }
