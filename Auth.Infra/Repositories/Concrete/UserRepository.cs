@@ -19,6 +19,11 @@ namespace Auth.Infra.Repositories.Concrete
             return _context.Users.SingleOrDefault(u => u.Username == username);
         }
 
+        public User GetUserByEmail(string email)
+        {
+            return _context.Users.SingleOrDefault(u => u.Email == email);
+        }
+
         public int GetUserIdByUsername(string username)
         {
             return GetUserByUsername(username).UserId;

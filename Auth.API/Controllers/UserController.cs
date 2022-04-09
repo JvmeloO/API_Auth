@@ -22,19 +22,19 @@ namespace Auth.API.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public IActionResult Register([FromBody] User User)
+        public IActionResult Register([FromBody] UserRegisterDTO userRegisterDTO)
         {
-            if (_userRepository.GetUserByUsername(User.Username) != null)
-                return BadRequest(new { message = "Nome de usuário já usado" });
-
             try
             {
-                var passwordEncrypted = _encryptService.EncryptPassword(User.Password);
+                if (_userRepository.GetUserByUsername(userRegisterDTO.Username) != null)
+                    return BadRequest(new { message = "Nome de usuário já usado" });
+
+                var passwordEncrypted = _encryptService.EncryptPassword(userRegisterDTO.Password);
 
                 var user = new User
                 {
-                    Username = User.Username,
-                    Email = User.Email,
+                    Username = userRegisterDTO.Username,
+                    Email = userRegisterDTO.Email,
                     Password = passwordEncrypted
                 };
 

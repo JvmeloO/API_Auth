@@ -50,5 +50,25 @@ namespace Auth.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        //[HttpPost]
+        //[Route("Recovery")]
+        //public IActionResult SendEmailPasswordRecovery(PasswordRecoveryDTO passwordRecoveryDTO) 
+        //{
+        //    try
+        //    {
+        //        var user = _userRepository.GetUserByEmail(passwordRecoveryDTO.Email);
+
+        //        if (user == null)
+        //            return NotFound(new { message = "Email não cadastrado" });
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw;
+        //    }
+        //}
     }
 }

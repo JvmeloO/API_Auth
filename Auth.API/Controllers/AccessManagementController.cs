@@ -26,7 +26,14 @@ namespace Auth.API.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult GetRoles() 
         {
-            return Ok(_roleRepository.GetRoles());
+            try
+            {
+                return Ok(_roleRepository.GetRoles());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet]
@@ -34,7 +41,14 @@ namespace Auth.API.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult GetRolesByUsername(string username)
         {
-            return Ok(_roleRepository.GetRolesByUserId(_userRepository.GetUserIdByUsername(username)));
+            try
+            {
+                return Ok(_roleRepository.GetRolesByUserId(_userRepository.GetUserIdByUsername(username)));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]
@@ -42,13 +56,13 @@ namespace Auth.API.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult GrantRolesUser([FromBody] UserRolesDTO userRolesDTO)
         {
-            var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
-
-            if (user == null)
-                return NotFound(new { message = "Usuário não cadastrado" });
-
             try
             {
+                var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
+
+                if (user == null)
+                    return NotFound(new { message = "Usuário não cadastrado" });
+
                 _userRepository.InsertRolesToUser(user.UserId, userRolesDTO.RolesIds);
                 _userRepository.Save();
 
@@ -65,13 +79,13 @@ namespace Auth.API.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult DismissRolesUser([FromBody] UserRolesDTO userRolesDTO)
         {
-            var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
-
-            if (user == null)
-                return NotFound(new { message = "Usuário não cadastrado" });
-
             try
             {
+                var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
+
+                if (user == null)
+                    return NotFound(new { message = "Usuário não cadastrado" });
+
                 _userRepository.DeleteRolesToUser(user.UserId, userRolesDTO.RolesIds);
                 _userRepository.Save();
 
