@@ -1,5 +1,8 @@
-﻿using Auth.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Auth.Domain.Entities;
 
 namespace Auth.Infra.DbContexts
 {
@@ -14,6 +17,8 @@ namespace Auth.Infra.DbContexts
         {
         }
 
+        public virtual DbSet<EmailsSent> EmailsSents { get; set; } = null!;
+        public virtual DbSet<EmailsType> EmailsTypes { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -27,6 +32,47 @@ namespace Auth.Infra.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<EmailsSent>(entity =>
+            {
+                entity.HasKey(e => e.EmailSentId);
+
+                entity.Property(e => e.Content)
+                    .HasMaxLength(7000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RecipientEmail)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SendDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SenderEmail)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SubjectEmail)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.EmailType)
+                    .WithMany(p => p.EmailsSents)
+                    .HasForeignKey(d => d.EmailTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailsSents_EmailTypeId");
+            });
+
+            modelBuilder.Entity<EmailsType>(entity =>
+            {
+                entity.HasKey(e => e.EmailTypeId);
+
+                entity.HasIndex(e => e.EmailTypeName, "UQ_EmailsTypes")
+                    .IsUnique();
+
+                entity.Property(e => e.EmailTypeName)
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.HasIndex(e => e.RoleName, "UQ_Roles")

@@ -29,10 +29,10 @@ CREATE TABLE UserRoles(UserId INT NOT NULL,
 					   CONSTRAINT FK_UserRoles_RoleId FOREIGN KEY (RoleId) REFERENCES Roles(RoleId),
 					   CONSTRAINT UQ_UserRoles UNIQUE (UserId, RoleId));
 
-CREATE TABLE EmailType(EmailTypeId INT NOT NULL IDENTITY(1,1),
-					   EmailTypeName VARCHAR(30) NOT NULL,
-					   CONSTRAINT PK_EmailType PRIMARY KEY (EmailTypeId),
-					   CONSTRAINT UQ_EmailType UNIQUE (EmailTypeName))
+CREATE TABLE EmailsTypes(EmailTypeId INT NOT NULL IDENTITY(1,1),
+					     EmailTypeName VARCHAR(30) NOT NULL,
+					     CONSTRAINT PK_EmailsTypes PRIMARY KEY (EmailTypeId),
+					     CONSTRAINT UQ_EmailsTypes UNIQUE (EmailTypeName))
 
 CREATE TABLE EmailsSents(EmailSentId INT NOT NULL IDENTITY(1,1),
 						 EmailTypeId INT NOT NULL,
@@ -45,4 +45,4 @@ CREATE TABLE EmailsSents(EmailSentId INT NOT NULL IDENTITY(1,1),
 						 VerificationCode INT NULL,
 						 ValidatedCode BIT NULL
 						 CONSTRAINT PK_EmailsSents PRIMARY KEY (EmailSentId),
-						 CONSTRAINT FK_EmailsSents_EmailTypeId FOREIGN KEY (EmailTypeId) REFERENCES EmailType(EmailTypeId))
+						 CONSTRAINT FK_EmailsSents_EmailTypeId FOREIGN KEY (EmailTypeId) REFERENCES EmailsTypes(EmailTypeId))

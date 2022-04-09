@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Auth.Domain.Entities
 {
@@ -12,7 +13,6 @@ namespace Auth.Domain.Entities
         public int RoleId { get; set; }
         public string RoleName { get; set; } = null!;
 
-        [JsonIgnore]
         public virtual ICollection<User> Users { get; set; }
     }
 }

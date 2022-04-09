@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext -Connection name=ConnectionStrings:authdb Microsoft.EntityFrameworkCore.SqlServer -ContextDir "DbContexts\" -ContextNamespace "Auth.Infra.DbContexts" -OutputDir "..\Auth.Domain\Entities" -Namespace "Auth.Domain.Entities" -Force

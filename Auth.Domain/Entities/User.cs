@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Auth.Domain.Entities
 {
@@ -14,7 +15,6 @@ namespace Auth.Domain.Entities
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
 
-        [JsonIgnore]
         public virtual ICollection<Role> Roles { get; set; }
     }
 }
