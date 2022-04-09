@@ -29,29 +29,25 @@ namespace Auth.Infra.Repositories.Concrete
             _context.Users.Add(user);
         }
 
-        public void InsertRolesToUser(int userId, List<int> RolesIds) 
+        public void InsertRolesToUser(int userId, List<int> rolesIds)
         {
-            var userRoles = new User { UserId = userId };
-            _context.Users.Add(userRoles);
-            _context.Users.Attach(userRoles);
-
-            var roleList = new List<Role>();
-            foreach (var roleId in RolesIds)
-            {
-                var role = new Role { RoleId = roleId };
-                _context.Roles.Add(role);
-                _context.Roles.Attach(role);
-                roleList.Add(role);
-            }
-
-            userRoles.Roles = roleList;
-            _context.Users.Add(userRoles);
+            var userRoles = _context.Users.Single(u => u.UserId == userId);
+            foreach (var roleId in rolesIds)
+                userRoles.Roles.Add(_context.Roles.Single(r => r.RoleId == roleId));
         }
 
         public void DeleteUser(int userId)
         {
             var user = _context.Users.Find(userId);
             _context.Users.Remove(user);
+        }
+
+        public void DeleteRolesToUser(int userId, List<int> rolesIds)
+        {
+            var userRoles = _context.Users.Include(r => r.Roles).Single(u => u.UserId == userId);
+
+            foreach (var roleId in rolesIds)
+                userRoles.Roles.Remove(userRoles.Roles.SingleOrDefault(r => r.RoleId == roleId));
         }
 
         public void UpdateUser(User user)

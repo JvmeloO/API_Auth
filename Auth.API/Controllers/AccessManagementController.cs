@@ -38,32 +38,6 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("Role/Create")]
-        [Authorize(Roles = "Administrador")]
-        public IActionResult RoleCreate(RoleCreateDTO roleCreateDTO)
-        {
-            if (_roleRepository.GetRoleByRoleName(roleCreateDTO.RoleName) != null)
-                return BadRequest(new { message = "Função já existe" });
-
-            try
-            {
-                var role = new Role
-                {
-                    RoleName = roleCreateDTO.RoleName,
-                };
-
-                _roleRepository.InsertRole(role);
-                _roleRepository.Save();
-
-                return StatusCode((int)HttpStatusCode.Created);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpPost]
         [Route("Roles/Grant-User")]
         [Authorize(Roles = "Administrador")]
         public IActionResult GrantRolesUser([FromBody] UserRolesDTO userRolesDTO)
@@ -86,25 +60,27 @@ namespace Auth.API.Controllers
             }
         }
 
-        //[HttpPost]
-        //[Route("Roles/Dismiss-User")]
-        //[Authorize(Roles = "Administrador")]
-        //public IActionResult DismissRolesUser([FromBody] UserRolesDTO userRolesDTO)
-        //{
-        //    if (_userRepository.GetUserByUsername(userRolesDTO.Username) == null)
-        //        return NotFound(new { message = "Usuário não cadastrado" });
+        [HttpPost]
+        [Route("Roles/Dismiss-User")]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult DismissRolesUser([FromBody] UserRolesDTO userRolesDTO)
+        {
+            var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
 
-        //    try
-        //    {
-        //        _userRepository.InsertRolesToUser(userRolesDTO.Username, userRolesDTO.RolesIds);
-        //        _userRepository.Save();
+            if (user == null)
+                return NotFound(new { message = "Usuário não cadastrado" });
 
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-        //    }
-        //}
+            try
+            {
+                _userRepository.DeleteRolesToUser(user.UserId, userRolesDTO.RolesIds);
+                _userRepository.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

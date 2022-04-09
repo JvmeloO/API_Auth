@@ -1,4 +1,6 @@
-﻿namespace Auth.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Auth.Domain.Entities
 {
     public partial class User
     {
@@ -12,6 +14,7 @@
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
 
+        [JsonIgnore]
         public virtual ICollection<Role> Roles { get; set; }
     }
 }

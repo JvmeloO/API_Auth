@@ -7,8 +7,9 @@ namespace Auth.Infra.Repositories.Abstract
         User GetUserByUsername(string username);
         int GetUserIdByUsername(string username);
         void InsertUser(User user);
-        void InsertRolesToUser(int userId, List<int> RolesIds);
+        void InsertRolesToUser(int userId, List<int> rolesIds);
         void DeleteUser(int userId);
+        void DeleteRolesToUser(int userId, List<int> rolesIds);
         void UpdateUser(User user);
         void Save();
     }

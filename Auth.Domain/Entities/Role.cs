@@ -1,4 +1,6 @@
-﻿namespace Auth.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Auth.Domain.Entities
 {
     public partial class Role
     {
@@ -10,6 +12,7 @@
         public int RoleId { get; set; }
         public string RoleName { get; set; } = null!;
 
+        [JsonIgnore]
         public virtual ICollection<User> Users { get; set; }
     }
 }
