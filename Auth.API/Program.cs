@@ -23,9 +23,13 @@ builder.Services.AddDbContext<authdbContext>(options =>
 
 builder.Services.AddScoped<IEncryptService, EncryptService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ISendEmailService, SendEmailService>();
 
 builder.Services.AddTransient<IRoleRepository, RoleRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IEmailSentRepository, EmailSentRepository>();
+builder.Services.AddTransient<IEmailTemplateRepository, EmailTemplateRepository>();
+builder.Services.AddTransient<IEmailTypeRepository, EmailTypeRepository>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services.AddAuthentication(x => 

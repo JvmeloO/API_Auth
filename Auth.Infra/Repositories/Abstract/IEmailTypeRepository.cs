@@ -1,6 +1,4 @@
-﻿using Auth.Domain.Entities;
-
-namespace Auth.Infra.Repositories.Abstract
+﻿namespace Auth.Infra.Repositories.Abstract
 {
     public interface IEmailTypeRepository
     {

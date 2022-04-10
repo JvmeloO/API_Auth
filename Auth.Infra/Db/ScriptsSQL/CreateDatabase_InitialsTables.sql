@@ -44,7 +44,7 @@ CREATE TABLE EmailTemplates(EmailTemplateId INT NOT NULL IDENTITY(1,1),
 							CONSTRAINT PK_EmailTemplates PRIMARY KEY (EmailTemplateId),
 							CONSTRAINT UQ_EmailTemplates UNIQUE (TemplateName),
 							CONSTRAINT FK_EmailTemplates_EmailTypeId FOREIGN KEY (EmailTypeId) REFERENCES EmailTypes(EmailTypeId),
-							CONSTRAINT CK_EmailTemplates_Content CHECK (DATALENGTH([Content]) <= 50000))						
+							CONSTRAINT CK_EmailTemplates_Content CHECK (DATALENGTH([Content]) <= 400000))						
 
 CREATE TABLE EmailSents(EmailSentId INT NOT NULL IDENTITY(1,1),
 						SenderEmail VARCHAR(50) NOT NULL,

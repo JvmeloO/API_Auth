@@ -13,9 +13,10 @@ namespace Auth.Infra.Repositories.Concrete
             _context = context;
         }
 
-        public EmailSent GetLastEmailSentByRecipientEmailAndEmailTemplateId(string recipientEmail, int emailTemplateId) 
+        public EmailSent GetLastEmailSentByRecipientEmailAndTemplateName(string recipientEmail, string templateName) 
         {
-            return _context.EmailSents.LastOrDefault(e => e.RecipientEmail == recipientEmail && e.EmailTemplateId == emailTemplateId);
+            return _context.EmailSents.LastOrDefault(e => e.RecipientEmail == recipientEmail 
+            && e.EmailTemplateId == _context.EmailTemplates.SingleOrDefault(e => e.TemplateName == templateName).EmailTemplateId);
         }
 
         public void InsertEmailSent(EmailSent emailSent)

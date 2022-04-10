@@ -4,7 +4,7 @@ namespace Auth.Infra.Repositories.Abstract
 {
     public interface IEmailSentRepository
     {
-        EmailSent GetLastEmailSentByRecipientEmailAndEmailTemplateId(string recipientEmail, int emailTemplateId);
+        EmailSent GetLastEmailSentByRecipientEmailAndTemplateName(string recipientEmail, string templateName);
         void InsertEmailSent(EmailSent emailSent);
         void Save();
     }

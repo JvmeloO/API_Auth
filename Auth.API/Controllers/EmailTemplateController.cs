@@ -22,7 +22,7 @@ namespace Auth.API.Controllers
         [HttpPost]
         [Route("Create")]
         [Authorize(Roles = "Administrador")]
-        public IActionResult CreateEmailTemplate(EmailTemplateCreateDTO emailTemplateCreateDTO)
+        public IActionResult CreateEmailTemplate([FromForm] EmailTemplateCreateDTO emailTemplateCreateDTO)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace Auth.API.Controllers
                     Content = emailTemplateCreateDTO.Content,
                     ContentIsHtml = emailTemplateCreateDTO.ContentIsHtml,
                     EmailSubject = emailTemplateCreateDTO.EmailSubject,
-                    EmailTypeId = emailTemplateCreateDTO.EmailTypeId
+                    EmailTypeId = Convert.ToInt32(emailTemplateCreateDTO.EmailTypeId)
                 };
                 _emailTemplateRepository.InsertEmailTemplate(emailTemplate);
                 _emailTemplateRepository.Save();

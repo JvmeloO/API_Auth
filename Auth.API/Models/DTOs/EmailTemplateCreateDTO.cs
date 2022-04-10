@@ -13,13 +13,13 @@ namespace Auth.API.Models.DTOs
         public string EmailSubject { get; set; } = null!;
 
         [Required(ErrorMessage = "O campo não pode ser nulo")]
-        [MaxLength(50000, ErrorMessage = "O campo não pode passar de 50000 caracteres")]
+        [MaxLength(400000, ErrorMessage = "O campo não pode passar de 400.000 caracteres")]
         public string Content { get; set; } = null!;
 
         [Required(ErrorMessage = "O campo não pode ser nulo")]
         public bool ContentIsHtml { get; set; }
 
         [Required(ErrorMessage = "O campo não pode ser nulo")]
-        public int EmailTypeId { get; set; }
+        public string EmailTypeId { get; set; } = null!;
     }
 }
