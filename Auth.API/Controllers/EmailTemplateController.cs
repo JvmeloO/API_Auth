@@ -47,5 +47,30 @@ namespace Auth.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpPost]
+        [Route("Update/{emailTemplateId}")]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult UpdateEmailTemplate(int emailTemplateId, [FromForm] EmailTemplateUpdateDTO emailTemplateUpdateDTO)
+        {
+            try
+            {
+                var emailTemplate = _emailTemplateRepository.GetEmailTemplateByEmailTemplateId(emailTemplateId);
+
+                emailTemplate.TemplateName = emailTemplateUpdateDTO.TemplateName ?? emailTemplate.TemplateName;
+                emailTemplate.EmailSubject = emailTemplateUpdateDTO.EmailSubject ?? emailTemplate.EmailSubject;
+                emailTemplate.Content = emailTemplateUpdateDTO.Content ?? emailTemplate.Content;
+                emailTemplate.ContentIsHtml = emailTemplateUpdateDTO.ContentIsHtml ?? emailTemplate.ContentIsHtml;
+                emailTemplate.EmailTypeId = emailTemplateUpdateDTO.EmailTypeId != null ? Convert.ToInt32(emailTemplateUpdateDTO.EmailTypeId) : emailTemplate.EmailTypeId;
+                _emailTemplateRepository.UpdateEmailTemplate(emailTemplate);
+                _emailTemplateRepository.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

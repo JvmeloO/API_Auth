@@ -19,6 +19,11 @@ namespace Auth.Infra.Repositories.Concrete
             return _context.EmailTemplates.SingleOrDefault(t => t.TemplateName == templateName);
         }
 
+        public EmailTemplate GetEmailTemplateByEmailTemplateId(int emailTemplateId)
+        {
+            return _context.EmailTemplates.Find(emailTemplateId);
+        }
+
         public void InsertEmailTemplate(EmailTemplate emailTemplate)
         { 
             _context.EmailTemplates.Add(emailTemplate);

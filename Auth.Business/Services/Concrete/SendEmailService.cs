@@ -25,10 +25,13 @@ namespace Auth.Business.Services.Concrete
             if (template == null)
                 throw new ApplicationException("Template não existe");
 
+            if (verificationCode != null)
+                template.Content = string.Format(template.Content, verificationCode);
+
             var smtpClient = new SmtpClient(host: "smtp.gmail.com", 587)
             {
                 EnableSsl = true,
-                Timeout = 20000,
+                Timeout = 30000,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(senderEmail, senderEmailPassword)
