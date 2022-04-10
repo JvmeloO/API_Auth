@@ -25,8 +25,9 @@ namespace Auth.Business.Services.Concrete
             if (template == null)
                 throw new ApplicationException("Template não existe");
 
-            if (verificationCode != null)
-                template.Content = string.Format(template.Content, verificationCode);
+            var templateContentCode = string.Empty;
+            if (verificationCode != null && validatedCode != null)
+                templateContentCode = string.Format(template.Content, verificationCode);
 
             var smtpClient = new SmtpClient(host: "smtp.gmail.com", 587)
             {
@@ -41,7 +42,7 @@ namespace Auth.Business.Services.Concrete
             {
                 From = new MailAddress(senderEmail),
                 Subject = template.EmailSubject,
-                Body = template.Content,
+                Body = templateContentCode,
                 IsBodyHtml = template.ContentIsHtml
             };
             mailMessage.To.Add(recipientEmail);
