@@ -6,6 +6,7 @@ namespace Auth.Infra.Repositories.Abstract
     {
         EmailSent GetLastEmailSentByRecipientEmailAndTemplateName(string recipientEmail, string templateName);
         void InsertEmailSent(EmailSent emailSent);
+        void UpdateVerificationCodeValidatedEmailSentByEmailSendId(int emailSentId);
         void Save();
     }
 }

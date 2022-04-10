@@ -24,6 +24,7 @@ builder.Services.AddDbContext<authdbContext>(options =>
 builder.Services.AddScoped<IEncryptService, EncryptService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISendEmailService, SendEmailService>();
+builder.Services.AddScoped<IPasswordRecoveryService, PasswordRecoveryService>();
 
 builder.Services.AddTransient<IRoleRepository, RoleRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();

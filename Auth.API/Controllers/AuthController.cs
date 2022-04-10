@@ -55,7 +55,7 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("Recovery")]
+        [Route("PasswordRecovery")]
         public IActionResult SendEmailPasswordRecovery([FromBody] PasswordRecoveryDTO passwordRecoveryDTO)
         {
             try
@@ -74,16 +74,16 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("Recovery/ValidateCode")]
-        public IActionResult ValidateCodePasswordRecovery([FromBody] PasswordRecoveryDTO passwordRecoveryDTO)
+        [Route("PasswordRecovery/ValidateCode")]
+        public IActionResult ValidateCodePasswordRecovery([FromBody] PasswordRecoveryVerificationCodeDTO passwordRecoveryVerificationCodeDTO)
         {
             try
             {
-                if (string.IsNullOrEmpty(passwordRecoveryDTO.ValidateCode))
+                if (string.IsNullOrEmpty(passwordRecoveryVerificationCodeDTO.VerificationCode))
                     return BadRequest(new { message = "Informe o código de verificação recebido por email" });
 
-                if (!_passwordRecoveryService.ValidateCode(passwordRecoveryDTO.Email, passwordRecoveryDTO.ValidateCode))
-                    return Unauthorized(new { message = "Código de verificação inválido" });
+                if (!_passwordRecoveryService.ValidateCode(passwordRecoveryVerificationCodeDTO.Email, passwordRecoveryVerificationCodeDTO.VerificationCode))
+                    return Unauthorized(new { message = "Código de verificação inválido ou expirado" });
 
                 return Ok();
             }

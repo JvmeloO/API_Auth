@@ -28,8 +28,9 @@ namespace Auth.Business.Services.Concrete
             var smtpClient = new SmtpClient(host: "smtp.gmail.com", 587)
             {
                 EnableSsl = true,
-                Timeout = 10000,
+                Timeout = 20000,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(senderEmail, senderEmailPassword)
             };
 

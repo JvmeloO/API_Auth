@@ -40,8 +40,13 @@ namespace Auth.Business.Services.Concrete
         {
             var emailSent = _emailSentRepository.GetLastEmailSentByRecipientEmailAndTemplateName(recipientEmail, _templateName);
 
-            if (verificationCode == emailSent.VerificationCode)
+            if (verificationCode == emailSent.VerificationCode && emailSent.ValidatedCode == false
+                && emailSent.SendDate.AddHours(1) > DateTime.Now)
+            {
+                _emailSentRepository.UpdateVerificationCodeValidatedEmailSentByEmailSendId(emailSent.EmailSentId);
+                _emailSentRepository.Save();
                 return true;
+            }
 
             return false;
         }
