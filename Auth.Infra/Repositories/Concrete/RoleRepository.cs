@@ -24,9 +24,9 @@ namespace Auth.Infra.Repositories.Concrete
             return _context.Roles.Where(r => r.Users.Any(u => u.UserId == userId));
         }
 
-        public Role GetRoleByRoleId(int roleId)
+        public Role GetRoleByRoleName(string roleName)
         {
-            return _context.Roles.Find(roleId);
+            return _context.Roles.SingleOrDefault(r => r.RoleName == roleName);
         }
 
         public void InsertRole(Role role)

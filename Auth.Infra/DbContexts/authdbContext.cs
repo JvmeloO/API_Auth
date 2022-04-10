@@ -17,8 +17,9 @@ namespace Auth.Infra.DbContexts
         {
         }
 
-        public virtual DbSet<EmailsSent> EmailsSents { get; set; } = null!;
-        public virtual DbSet<EmailsType> EmailsTypes { get; set; } = null!;
+        public virtual DbSet<EmailSent> EmailSents { get; set; } = null!;
+        public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
+        public virtual DbSet<EmailType> EmailTypes { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -32,14 +33,8 @@ namespace Auth.Infra.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EmailsSent>(entity =>
+            modelBuilder.Entity<EmailSent>(entity =>
             {
-                entity.HasKey(e => e.EmailSentId);
-
-                entity.Property(e => e.Content)
-                    .HasMaxLength(7000)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.RecipientEmail)
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -50,25 +45,45 @@ namespace Auth.Infra.DbContexts
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SubjectEmail)
+                entity.Property(e => e.VerificationCode)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.EmailTemplate)
+                    .WithMany(p => p.EmailSents)
+                    .HasForeignKey(d => d.EmailTemplateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailSents_EmailTemplateId");
+            });
+
+            modelBuilder.Entity<EmailTemplate>(entity =>
+            {
+                entity.HasIndex(e => e.TemplateName, "UQ_EmailTemplates")
+                    .IsUnique();
+
+                entity.Property(e => e.Content).IsUnicode(false);
+
+                entity.Property(e => e.EmailSubject)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.TemplateName)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
                 entity.HasOne(d => d.EmailType)
-                    .WithMany(p => p.EmailsSents)
+                    .WithMany(p => p.EmailTemplates)
                     .HasForeignKey(d => d.EmailTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EmailsSents_EmailTypeId");
+                    .HasConstraintName("FK_EmailTemplates_EmailTypeId");
             });
 
-            modelBuilder.Entity<EmailsType>(entity =>
+            modelBuilder.Entity<EmailType>(entity =>
             {
-                entity.HasKey(e => e.EmailTypeId);
-
-                entity.HasIndex(e => e.EmailTypeName, "UQ_EmailsTypes")
+                entity.HasIndex(e => e.TypeName, "UQ_EmailTypes")
                     .IsUnique();
 
-                entity.Property(e => e.EmailTypeName)
+                entity.Property(e => e.TypeName)
                     .HasMaxLength(30)
                     .IsUnicode(false);
             });

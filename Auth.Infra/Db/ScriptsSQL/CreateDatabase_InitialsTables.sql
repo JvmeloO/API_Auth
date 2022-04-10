@@ -3,6 +3,7 @@
 ---------------------------------------------------------------------------------------------------------------------------
 
 CREATE DATABASE authdb;
+GO
 
 ---------------------------------------------------------------------------------------------------------------------------
 /* Create Initials Tables */
@@ -29,20 +30,28 @@ CREATE TABLE UserRoles(UserId INT NOT NULL,
 					   CONSTRAINT FK_UserRoles_RoleId FOREIGN KEY (RoleId) REFERENCES Roles(RoleId),
 					   CONSTRAINT UQ_UserRoles UNIQUE (UserId, RoleId));
 
-CREATE TABLE EmailsTypes(EmailTypeId INT NOT NULL IDENTITY(1,1),
-					     EmailTypeName VARCHAR(30) NOT NULL,
-					     CONSTRAINT PK_EmailsTypes PRIMARY KEY (EmailTypeId),
-					     CONSTRAINT UQ_EmailsTypes UNIQUE (EmailTypeName))
+CREATE TABLE EmailTypes(EmailTypeId INT NOT NULL IDENTITY(1,1),
+					    TypeName VARCHAR(30) NOT NULL,
+					    CONSTRAINT PK_EmailTypes PRIMARY KEY (EmailTypeId),
+					    CONSTRAINT UQ_EmailTypes UNIQUE (TypeName))
 
-CREATE TABLE EmailsSents(EmailSentId INT NOT NULL IDENTITY(1,1),
-						 EmailTypeId INT NOT NULL,
-						 SenderEmail VARCHAR(50) NOT NULL,
-						 RecipientEmail VARCHAR(50) NOT NULL,
-						 SubjectEmail VARCHAR(100) NOT NULL,
-						 Content VARCHAR(7000) NOT NULL,
-						 ContentIsHtml BIT NOT NULL,
-						 SendDate DATETIME NOT NULL,
-						 VerificationCode INT NULL,
-						 ValidatedCode BIT NULL
-						 CONSTRAINT PK_EmailsSents PRIMARY KEY (EmailSentId),
-						 CONSTRAINT FK_EmailsSents_EmailTypeId FOREIGN KEY (EmailTypeId) REFERENCES EmailsTypes(EmailTypeId))
+CREATE TABLE EmailTemplates(EmailTemplateId INT NOT NULL IDENTITY(1,1),
+							TemplateName VARCHAR(20) NOT NULL,
+							EmailSubject VARCHAR(100) NOT NULL,
+							Content VARCHAR(MAX) NOT NULL,
+							ContentIsHtml BIT NOT NULL,
+							EmailTypeId INT NOT NULL,
+							CONSTRAINT PK_EmailTemplates PRIMARY KEY (EmailTemplateId),
+							CONSTRAINT UQ_EmailTemplates UNIQUE (TemplateName),
+							CONSTRAINT FK_EmailTemplates_EmailTypeId FOREIGN KEY (EmailTypeId) REFERENCES EmailTypes(EmailTypeId),
+							CONSTRAINT CK_EmailTemplates_Content CHECK (DATALENGTH([Content]) <= 50000))						
+
+CREATE TABLE EmailSents(EmailSentId INT NOT NULL IDENTITY(1,1),
+						SenderEmail VARCHAR(50) NOT NULL,
+						RecipientEmail VARCHAR(50) NOT NULL,
+						SendDate DATETIME NOT NULL,
+						VerificationCode VARCHAR(10) NULL,
+						ValidatedCode BIT NULL,
+						EmailTemplateId INT NOT NULL,
+						CONSTRAINT PK_EmailSents PRIMARY KEY (EmailSentId),
+						CONSTRAINT FK_EmailSents_EmailTemplateId FOREIGN KEY (EmailTemplateId) REFERENCES EmailTemplates(EmailTemplateId))

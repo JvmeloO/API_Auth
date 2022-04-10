@@ -2,7 +2,7 @@
 {
     public interface ISendEmailService
     {
-        void SendEmail(int emailType, string senderEmail, string senderEmailPassword, string recipientEmail,
-            string subjectEmail, string content, bool contentIsHtml, string? verificationCode, bool? validatedCode);
+        void SendEmail(string senderEmail, string senderEmailPassword, string recipientEmail,
+            string? verificationCode, bool? validatedCode, string templateName);
     }
 }

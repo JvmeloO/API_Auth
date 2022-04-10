@@ -37,7 +37,6 @@ namespace Auth.API.Controllers
                     Email = userRegisterDTO.Email,
                     Password = passwordEncrypted
                 };
-
                 _userRepository.InsertUser(user);
                 _userRepository.Save();
 

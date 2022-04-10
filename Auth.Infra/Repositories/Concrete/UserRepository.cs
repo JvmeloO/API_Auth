@@ -26,7 +26,7 @@ namespace Auth.Infra.Repositories.Concrete
 
         public int GetUserIdByUsername(string username)
         {
-            return GetUserByUsername(username).UserId;
+            return _context.Users.SingleOrDefault(u => u.Username == username).UserId;
         }
 
         public void InsertUser(User user)
