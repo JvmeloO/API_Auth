@@ -17,10 +17,5 @@ namespace Auth.Infra.Repositories.Concrete
         {
             return _dbSet.SingleOrDefault(u => u.Username == username);
         }
-
-        public User GetByEmail(string email)
-        {
-            return _dbSet.SingleOrDefault(u => u.Email == email);
-        }
     }
 }

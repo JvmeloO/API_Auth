@@ -29,7 +29,7 @@ namespace Auth.API.Controllers
         {
             try
             {
-                if (_emailTemplateRepository.GetByTemplateName(emailTemplateCreateDTO.TemplateName) != null)
+                if (_emailTemplateRepository.GetWithSingleOrDefault(e => e.TemplateName == emailTemplateCreateDTO.TemplateName) != null)
                     return BadRequest(new { Message = "Nome do template já cadastrado" });
 
                 _emailTemplateRepository.Insert(new EmailTemplate

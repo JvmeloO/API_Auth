@@ -61,7 +61,7 @@ namespace Auth.API.Controllers
         {
             try
             {
-                if (_userRepository.GetByEmail(passwordRecoveryDTO.Email) == null)
+                if (_userRepository.GetWithSingleOrDefault(u => u.Email == passwordRecoveryDTO.Email) == null)
                     return NotFound(new { message = "Email não cadastrado" });
 
                 _passwordRecoveryService.SendEmailVerificationCode(passwordRecoveryDTO.Email);

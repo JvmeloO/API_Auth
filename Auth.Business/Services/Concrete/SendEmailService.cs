@@ -24,7 +24,7 @@ namespace Auth.Business.Services.Concrete
         public void SendEmail(string senderEmail, string senderEmailPassword, string recipientEmail,
             string? verificationCode, bool? validatedCode, string templateName)
         {
-            var template = _emailTemplateRepository.GetByTemplateName(templateName);
+            var template = _emailTemplateRepository.GetWithSingleOrDefault(e => e.TemplateName == templateName);
 
             if (template == null)
                 throw new ApplicationException("Template não existe");

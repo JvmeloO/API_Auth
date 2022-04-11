@@ -50,6 +50,11 @@ namespace Auth.Infra.Repositories.Concrete
             return result;
         }
 
+        public T GetWithSingleOrDefault(Func<T, bool> singleOrDefault)
+        {
+            return _dbSet.SingleOrDefault(singleOrDefault);
+        }
+
         public IQueryable<T> GetWithWhere(Func<T, bool> where)
         {
             return _dbSet.Where(where).AsQueryable();

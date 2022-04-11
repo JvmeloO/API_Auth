@@ -47,7 +47,8 @@ namespace Auth.Business.Services.Concrete
             && e.EmailTemplate.TemplateName == _templateName && e.SendDate.AddMinutes(verificationCodeMinuteExpiration) > DateTime.Now)
                 .OrderByDescending(e => e.SendDate).FirstOrDefault();
 
-            if (emailSent.VerificationCode == verificationCode && emailSent.ValidatedCode == false)
+            if (emailSent != null && 
+                emailSent.VerificationCode == verificationCode && emailSent.ValidatedCode == false)
             {
                 emailSent.ValidatedCode = true;
                 _emailSentRepository.Update(emailSent);

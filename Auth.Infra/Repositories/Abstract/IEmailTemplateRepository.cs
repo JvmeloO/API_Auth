@@ -2,8 +2,5 @@
 
 namespace Auth.Infra.Repositories.Abstract
 {
-    public interface IEmailTemplateRepository : IBaseRepository<EmailTemplate> 
-    {
-        EmailTemplate GetByTemplateName(string templateName);
-    }
+    public interface IEmailTemplateRepository : IBaseRepository<EmailTemplate> { }
 }
