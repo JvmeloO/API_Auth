@@ -34,7 +34,7 @@ namespace Auth.API.Controllers
             try
             {
                 var roles = _roleRepository.GetAll();
-                return Ok(roles.Select(r => RoleMap.EntityToDTO(r)).ToList());
+                return Ok(roles.Select(r => RoleMap.EntityToResultDTO(r)).ToList());
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace Auth.API.Controllers
             try
             {
                 var roles = _roleRepository.GetWithIncludeAndWhere(r => r.Users, r => r.Users.Any(u => u.Username == username));
-                return Ok(roles.Select(r => RoleMap.EntityToDTO(r)).ToList());
+                return Ok(roles.Select(r => RoleMap.EntityToResultDTO(r)).ToList());
             }
             catch (Exception ex)
             {

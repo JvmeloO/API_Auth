@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using Auth.Business.Models.DTOs;
 using Auth.Business.Services.Abstract;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
@@ -13,25 +14,26 @@ namespace Auth.Business.Services.Concrete
         private readonly IEmailSentRepository _emailSentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public SendEmailService(IEmailTemplateRepository emailTemplateRepository, IUnitOfWork unitOfWork,
-            IEmailSentRepository emailSentRepository)
+        public SendEmailService(IEmailTemplateRepository emailTemplateRepository, IEmailSentRepository emailSentRepository,
+            IUnitOfWork unitOfWork)
         {
             _emailTemplateRepository = emailTemplateRepository;
-            _unitOfWork = unitOfWork;
             _emailSentRepository = emailSentRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public void SendEmail(string senderEmail, string senderEmailPassword, string recipientEmail,
-            string? verificationCode, bool? validatedCode, string templateName)
+        public void SendEmail(SendEmailServiceDTO sendEmailServiceDTO)
         {
-            var template = _emailTemplateRepository.GetWithSingleOrDefault(e => e.TemplateName == templateName);
+            var template = _emailTemplateRepository.GetWithSingleOrDefault(e => e.TemplateName == sendEmailServiceDTO.TemplateName);
 
             if (template == null)
                 throw new ApplicationException("Template não existe");
 
-            var templateContentCode = string.Empty;
-            if (verificationCode != null && validatedCode != null)
-                templateContentCode = string.Format(template.Content, verificationCode);
+            var templateContentWithVariables = template.Content;
+            if (sendEmailServiceDTO.VerificationCode != null && sendEmailServiceDTO.ValidatedCode != null)
+                templateContentWithVariables = templateContentWithVariables.Replace("@codigoVerificacao", sendEmailServiceDTO.VerificationCode);
+            if (sendEmailServiceDTO.Link != null)
+                templateContentWithVariables = templateContentWithVariables.Replace("@link", sendEmailServiceDTO.Link);
 
             var smtpClient = new SmtpClient(host: "smtp.gmail.com", 587)
             {
@@ -39,27 +41,28 @@ namespace Auth.Business.Services.Concrete
                 Timeout = 30000,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(senderEmail, senderEmailPassword)
+                Credentials = new NetworkCredential(sendEmailServiceDTO.SenderEmail, sendEmailServiceDTO.SenderEmailPassword)
             };
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(senderEmail),
+                From = new MailAddress(sendEmailServiceDTO.SenderEmail),
                 Subject = template.EmailSubject,
-                Body = templateContentCode,
+                Body = templateContentWithVariables,
                 IsBodyHtml = template.ContentIsHtml
             };
-            mailMessage.To.Add(recipientEmail);
+            mailMessage.To.Add(sendEmailServiceDTO.RecipientEmail);
 
             smtpClient.Send(mailMessage);
 
             var emailSent = new EmailSent
             {
-                SenderEmail = senderEmail,
-                RecipientEmail = recipientEmail,
+                SenderEmail = sendEmailServiceDTO.SenderEmail,
+                RecipientEmail = sendEmailServiceDTO.RecipientEmail,
                 SendDate = DateTime.Now,
-                VerificationCode = verificationCode,
-                ValidatedCode = validatedCode,
+                VerificationCode = sendEmailServiceDTO.VerificationCode,
+                ValidatedCode = sendEmailServiceDTO.ValidatedCode,
+                Link = sendEmailServiceDTO.Link,
                 EmailTemplateId = template.EmailTemplateId
             };
             _emailSentRepository.Insert(emailSent);

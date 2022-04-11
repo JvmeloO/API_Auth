@@ -52,6 +52,7 @@ CREATE TABLE EmailSents(EmailSentId INT NOT NULL IDENTITY(1,1),
 						SendDate DATETIME NOT NULL,
 						VerificationCode VARCHAR(10) NULL,
 						ValidatedCode BIT NULL,
+						Link VARCHAR(1000) NULL,
 						EmailTemplateId INT NOT NULL,
 						CONSTRAINT PK_EmailSents PRIMARY KEY (EmailSentId),
 						CONSTRAINT FK_EmailSents_EmailTemplateId FOREIGN KEY (EmailTemplateId) REFERENCES EmailTemplates(EmailTemplateId))

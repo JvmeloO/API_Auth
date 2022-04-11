@@ -1,8 +1,9 @@
-﻿namespace Auth.Business.Services.Abstract
+﻿using Auth.Business.Models.DTOs;
+
+namespace Auth.Business.Services.Abstract
 {
     public interface ISendEmailService
     {
-        void SendEmail(string senderEmail, string senderEmailPassword, string recipientEmail,
-            string? verificationCode, bool? validatedCode, string templateName);
+        void SendEmail(SendEmailServiceDTO sendEmailServiceDTO);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Auth.API.Models.DTOs;
+using Auth.API.Models.Mappings;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
 using Auth.Infra.UnitOfWork.Abstract;
@@ -32,14 +33,7 @@ namespace Auth.API.Controllers
                 if (_emailTemplateRepository.GetWithSingleOrDefault(e => e.TemplateName == emailTemplateCreateDTO.TemplateName) != null)
                     return BadRequest(new { Message = "Nome do template já cadastrado" });
 
-                _emailTemplateRepository.Insert(new EmailTemplate
-                {
-                    TemplateName = emailTemplateCreateDTO.TemplateName,
-                    Content = emailTemplateCreateDTO.Content,
-                    ContentIsHtml = emailTemplateCreateDTO.ContentIsHtml,
-                    EmailSubject = emailTemplateCreateDTO.EmailSubject,
-                    EmailTypeId = Convert.ToInt32(emailTemplateCreateDTO.EmailTypeId)
-                });
+                _emailTemplateRepository.Insert(EmailTemplateMap.CreateDTOToEntity(emailTemplateCreateDTO));
                 _unitOfWork.Save();
 
                 return StatusCode((int)HttpStatusCode.Created);
@@ -59,12 +53,7 @@ namespace Auth.API.Controllers
             {
                 var emailTemplate = _emailTemplateRepository.GetById(emailTemplateId);
 
-                emailTemplate.TemplateName = emailTemplateUpdateDTO.TemplateName ?? emailTemplate.TemplateName;
-                emailTemplate.EmailSubject = emailTemplateUpdateDTO.EmailSubject ?? emailTemplate.EmailSubject;
-                emailTemplate.Content = emailTemplateUpdateDTO.Content ?? emailTemplate.Content;
-                emailTemplate.ContentIsHtml = emailTemplateUpdateDTO.ContentIsHtml ?? emailTemplate.ContentIsHtml;
-                emailTemplate.EmailTypeId = emailTemplateUpdateDTO.EmailTypeId != null ? Convert.ToInt32(emailTemplateUpdateDTO.EmailTypeId) : emailTemplate.EmailTypeId;
-                _emailTemplateRepository.Update(emailTemplate);
+                _emailTemplateRepository.Update(EmailTemplateMap.UpdateDTOToEntity(emailTemplateUpdateDTO, emailTemplate));
                 _unitOfWork.Save();
 
                 return Ok();

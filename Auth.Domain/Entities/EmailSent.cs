@@ -11,6 +11,7 @@ namespace Auth.Domain.Entities
         public DateTime SendDate { get; set; }
         public string? VerificationCode { get; set; }
         public bool? ValidatedCode { get; set; }
+        public string? Link { get; set; }
         public int EmailTemplateId { get; set; }
 
         public virtual EmailTemplate EmailTemplate { get; set; } = null!;

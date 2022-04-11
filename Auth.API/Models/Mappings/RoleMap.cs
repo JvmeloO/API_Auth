@@ -5,13 +5,10 @@ namespace Auth.API.Models.Mappings
 {
     public static class RoleMap
     {
-        public static RoleResultDTO EntityToDTO(Role role)
+        public static RoleResultDTO EntityToResultDTO(Role role) => new()
         {
-            return new RoleResultDTO
-            {
-                RoleId = role.RoleId,
-                RoleName = role.RoleName
-            };
-        }
+            RoleId = role.RoleId,
+            RoleName = role.RoleName
+        };
     }
 }

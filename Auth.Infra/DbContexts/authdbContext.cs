@@ -35,6 +35,10 @@ namespace Auth.Infra.DbContexts
         {
             modelBuilder.Entity<EmailSent>(entity =>
             {
+                entity.Property(e => e.Link)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.RecipientEmail)
                     .HasMaxLength(50)
                     .IsUnicode(false);

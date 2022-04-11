@@ -1,8 +1,11 @@
-﻿namespace Auth.Business.Services.Abstract
+﻿using Auth.Business.Models.DTOs;
+using Auth.Domain.Entities;
+
+namespace Auth.Business.Services.Abstract
 {
     public interface IPasswordRecoveryService
     {
-        void SendEmailVerificationCode(string recipientEmail);
-        bool ValidateCode(string recipientEmail, string verificationCode);
+        void SendEmailVerificationCode(PasswordRecoveryServiceDTO passwordRecoveryServiceDTO);
+        void NewPassword(PasswordRecoveryNewPasswordServiceDTO passwordRecoveryNewPasswordServiceDTO, User user);
     }
 }

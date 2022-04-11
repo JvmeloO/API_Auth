@@ -1,4 +1,5 @@
 ﻿using Auth.API.Models.DTOs;
+using Auth.Business.Models.DTOs;
 using Auth.Business.Services.Abstract;
 using Auth.Infra.Repositories.Abstract;
 using Microsoft.AspNetCore.Mvc;
@@ -25,16 +26,16 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Authenticate([FromBody] UserAuthDTO userAuthDTO)
+        public IActionResult Authenticate([FromBody] UserAuthCreateDTO userAuthCreateDTO)
         {
             try
             {
-                var user = _userRepository.GetByUsername(userAuthDTO.Username);
+                var user = _userRepository.GetByUsername(userAuthCreateDTO.Username);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não cadastrado" });
 
-                if (!_encryptService.VerifyPassword(userAuthDTO.Password, user.Password))
+                if (!_encryptService.VerifyPassword(userAuthCreateDTO.Password, user.Password))
                     return BadRequest(new { message = "Senha inválida" });
 
                 var token = _tokenService.GenerateToken(user);
@@ -53,15 +54,15 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("PasswordRecovery")]
-        public IActionResult SendEmailPasswordRecovery([FromBody] PasswordRecoveryDTO passwordRecoveryDTO)
+        [Route("PasswordRecovery/Send-Email")]
+        public IActionResult SendEmailPasswordRecovery([FromBody] PasswordRecoveryServiceDTO passwordRecoveryServiceDTO)
         {
             try
             {
-                if (_userRepository.GetWithSingleOrDefault(u => u.Email == passwordRecoveryDTO.Email) == null)
+                if (_userRepository.GetWithSingleOrDefault(u => u.Email == passwordRecoveryServiceDTO.Email) == null)
                     return NotFound(new { message = "Email não cadastrado" });
 
-                _passwordRecoveryService.SendEmailVerificationCode(passwordRecoveryDTO.Email);
+                _passwordRecoveryService.SendEmailVerificationCode(passwordRecoveryServiceDTO);
 
                 return Ok();
             }
@@ -72,16 +73,17 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        [Route("PasswordRecovery/ValidateCode")]
-        public IActionResult ValidateCodePasswordRecovery([FromBody] PasswordRecoveryVerificationCodeDTO passwordRecoveryVerificationCodeDTO)
+        [Route("PasswordRecovery/New-Password")]
+        public IActionResult NewPasswordPasswordRecovery([FromBody] PasswordRecoveryNewPasswordServiceDTO passwordRecoveryNewPasswordServiceDTO)
         {
             try
             {
-                if (string.IsNullOrEmpty(passwordRecoveryVerificationCodeDTO.VerificationCode))
-                    return BadRequest(new { message = "Informe o código de verificação recebido por email" });
+                var user = _userRepository.GetWithSingleOrDefault(u => u.Email == passwordRecoveryNewPasswordServiceDTO.Email);
 
-                if (!_passwordRecoveryService.ValidateCode(passwordRecoveryVerificationCodeDTO.Email, passwordRecoveryVerificationCodeDTO.VerificationCode))
-                    return Unauthorized(new { message = "Código de verificação inválido ou expirado" });
+                if (user == null)
+                    return NotFound(new { message = "Email não cadastrado" });
+
+                _passwordRecoveryService.NewPassword(passwordRecoveryNewPasswordServiceDTO, user);
 
                 return Ok();
             }
