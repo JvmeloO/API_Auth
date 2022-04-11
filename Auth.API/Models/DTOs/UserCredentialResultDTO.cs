@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Auth.API.Models.DTOs
+﻿namespace Auth.API.Models.DTOs
 {
-    public class UserCredentialDTO
+    public class UserCredentialResultDTO
     {
         public string Username { get; set; } = null!;
 

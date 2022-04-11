@@ -4,6 +4,8 @@ using Auth.Domain.Configurations;
 using Auth.Infra.DbContexts;
 using Auth.Infra.Repositories.Abstract;
 using Auth.Infra.Repositories.Concrete;
+using Auth.Infra.UnitOfWork.Abstract;
+using Auth.Infra.UnitOfWork.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +34,8 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IEmailSentRepository, EmailSentRepository>();
 builder.Services.AddTransient<IEmailTemplateRepository, EmailTemplateRepository>();
 builder.Services.AddTransient<IEmailTypeRepository, EmailTypeRepository>();
+
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services.AddAuthentication(x => 

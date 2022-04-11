@@ -2,13 +2,8 @@
 
 namespace Auth.Infra.Repositories.Abstract
 {
-    public interface IEmailTemplateRepository
+    public interface IEmailTemplateRepository : IBaseRepository<EmailTemplate> 
     {
-        EmailTemplate GetEmailTemplateByTemplateName(string templateName);
-        EmailTemplate GetEmailTemplateByEmailTemplateId(int emailTemplateId);
-        void InsertEmailTemplate(EmailTemplate emailTemplate);
-        void DeleteEmailTemplate(int emailTemplateId);
-        void UpdateEmailTemplate(EmailTemplate emailTemplate);
-        void Save();
+        EmailTemplate GetByTemplateName(string templateName);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Auth.API.Models.DTOs;
+using Auth.API.Models.Mappings;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
+using Auth.Infra.UnitOfWork.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -14,11 +16,14 @@ namespace Auth.API.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AccessManagementController(IUserRepository userRepository, IRoleRepository roleRepository)
+        public AccessManagementController(IUserRepository userRepository, IRoleRepository roleRepository,
+            IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
@@ -28,7 +33,8 @@ namespace Auth.API.Controllers
         {
             try
             {
-                return Ok(_roleRepository.GetRoles());
+                var roles = _roleRepository.GetAll();
+                return Ok(roles.Select(r => RoleMap.EntityToDTO(r)).ToList());
             }
             catch (Exception ex)
             {
@@ -39,11 +45,12 @@ namespace Auth.API.Controllers
         [HttpGet]
         [Route("Roles/User/{username}")]
         [Authorize(Roles = "Administrador")]
-        public IActionResult GetRolesByUsername(string username)
+        public IActionResult GetUserRoles(string username)
         {
             try
             {
-                return Ok(_roleRepository.GetRolesByUserId(_userRepository.GetUserIdByUsername(username)));
+                var roles = _roleRepository.GetWithIncludeAndWhere(r => r.Users, r => r.Users.Any(u => u.Username == username));
+                return Ok(roles.Select(r => RoleMap.EntityToDTO(r)).ToList());
             }
             catch (Exception ex)
             {
@@ -54,17 +61,19 @@ namespace Auth.API.Controllers
         [HttpPost]
         [Route("Roles/Grant-User")]
         [Authorize(Roles = "Administrador")]
-        public IActionResult GrantRolesUser([FromBody] UserRolesDTO userRolesDTO)
+        public IActionResult GrantUserRoles([FromBody] UserRolesDTO userRolesDTO)
         {
             try
             {
-                var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
+                var user = _userRepository.GetByUsername(userRolesDTO.Username);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não cadastrado" });
 
-                _userRepository.InsertRolesToUser(user.UserId, userRolesDTO.RolesIds);
-                _userRepository.Save();
+                // Insert in table Many to Many
+                foreach (var roleId in userRolesDTO.RolesIds)
+                    user.Roles.Add(_roleRepository.GetById(roleId));
+                _unitOfWork.Save();
 
                 return Ok();
             }
@@ -77,17 +86,19 @@ namespace Auth.API.Controllers
         [HttpPost]
         [Route("Roles/Dismiss-User")]
         [Authorize(Roles = "Administrador")]
-        public IActionResult DismissRolesUser([FromBody] UserRolesDTO userRolesDTO)
+        public IActionResult DismissUserRoles([FromBody] UserRolesDTO userRolesDTO)
         {
             try
             {
-                var user = _userRepository.GetUserByUsername(userRolesDTO.Username);
+                var user = _userRepository.GetWithIncludeAndSingleOrDefault(u => u.Roles, u => u.Username == userRolesDTO.Username);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não cadastrado" });
 
-                _userRepository.DeleteRolesToUser(user.UserId, userRolesDTO.RolesIds);
-                _userRepository.Save();
+                // Delete in table Many to Many
+                foreach (var roleId in userRolesDTO.RolesIds)
+                    user.Roles.Remove(_roleRepository.GetById(roleId));
+                _unitOfWork.Save();
 
                 return Ok();
             }

@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Auth.Business.Services.Abstract;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
+using Auth.Infra.UnitOfWork.Abstract;
 
 namespace Auth.Business.Services.Concrete
 {
@@ -10,17 +11,20 @@ namespace Auth.Business.Services.Concrete
     {
         private readonly IEmailTemplateRepository _emailTemplateRepository;
         private readonly IEmailSentRepository _emailSentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SendEmailService(IEmailTemplateRepository emailTemplateRepository, IEmailSentRepository emailSentRepository)
+        public SendEmailService(IEmailTemplateRepository emailTemplateRepository, IUnitOfWork unitOfWork,
+            IEmailSentRepository emailSentRepository)
         {
             _emailTemplateRepository = emailTemplateRepository;
+            _unitOfWork = unitOfWork;
             _emailSentRepository = emailSentRepository;
         }
 
         public void SendEmail(string senderEmail, string senderEmailPassword, string recipientEmail,
             string? verificationCode, bool? validatedCode, string templateName)
         {
-            var template = _emailTemplateRepository.GetEmailTemplateByTemplateName(templateName);
+            var template = _emailTemplateRepository.GetByTemplateName(templateName);
 
             if (template == null)
                 throw new ApplicationException("Template não existe");
@@ -58,8 +62,8 @@ namespace Auth.Business.Services.Concrete
                 ValidatedCode = validatedCode,
                 EmailTemplateId = template.EmailTemplateId
             };
-            _emailSentRepository.InsertEmailSent(emailSent);
-            _emailSentRepository.Save();
+            _emailSentRepository.Insert(emailSent);
+            _unitOfWork.Save();
         }
     }
 }

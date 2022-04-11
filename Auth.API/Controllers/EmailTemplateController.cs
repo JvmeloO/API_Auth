@@ -1,6 +1,7 @@
 ﻿using Auth.API.Models.DTOs;
 using Auth.Domain.Entities;
 using Auth.Infra.Repositories.Abstract;
+using Auth.Infra.UnitOfWork.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,10 +14,12 @@ namespace Auth.API.Controllers
     public class EmailTemplateController : ControllerBase
     {
         private readonly IEmailTemplateRepository _emailTemplateRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public EmailTemplateController(IEmailTemplateRepository emailTemplateRepository) 
+        public EmailTemplateController(IEmailTemplateRepository emailTemplateRepository, IUnitOfWork unitOfWork) 
         {
             _emailTemplateRepository = emailTemplateRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost]
@@ -26,19 +29,18 @@ namespace Auth.API.Controllers
         {
             try
             {
-                if (_emailTemplateRepository.GetEmailTemplateByTemplateName(emailTemplateCreateDTO.TemplateName) != null)
+                if (_emailTemplateRepository.GetByTemplateName(emailTemplateCreateDTO.TemplateName) != null)
                     return BadRequest(new { Message = "Nome do template já cadastrado" });
 
-                var emailTemplate = new EmailTemplate
+                _emailTemplateRepository.Insert(new EmailTemplate
                 {
                     TemplateName = emailTemplateCreateDTO.TemplateName,
                     Content = emailTemplateCreateDTO.Content,
                     ContentIsHtml = emailTemplateCreateDTO.ContentIsHtml,
                     EmailSubject = emailTemplateCreateDTO.EmailSubject,
                     EmailTypeId = Convert.ToInt32(emailTemplateCreateDTO.EmailTypeId)
-                };
-                _emailTemplateRepository.InsertEmailTemplate(emailTemplate);
-                _emailTemplateRepository.Save();
+                });
+                _unitOfWork.Save();
 
                 return StatusCode((int)HttpStatusCode.Created);
             }
@@ -55,15 +57,15 @@ namespace Auth.API.Controllers
         {
             try
             {
-                var emailTemplate = _emailTemplateRepository.GetEmailTemplateByEmailTemplateId(emailTemplateId);
+                var emailTemplate = _emailTemplateRepository.GetById(emailTemplateId);
 
                 emailTemplate.TemplateName = emailTemplateUpdateDTO.TemplateName ?? emailTemplate.TemplateName;
                 emailTemplate.EmailSubject = emailTemplateUpdateDTO.EmailSubject ?? emailTemplate.EmailSubject;
                 emailTemplate.Content = emailTemplateUpdateDTO.Content ?? emailTemplate.Content;
                 emailTemplate.ContentIsHtml = emailTemplateUpdateDTO.ContentIsHtml ?? emailTemplate.ContentIsHtml;
                 emailTemplate.EmailTypeId = emailTemplateUpdateDTO.EmailTypeId != null ? Convert.ToInt32(emailTemplateUpdateDTO.EmailTypeId) : emailTemplate.EmailTypeId;
-                _emailTemplateRepository.UpdateEmailTemplate(emailTemplate);
-                _emailTemplateRepository.Save();
+                _emailTemplateRepository.Update(emailTemplate);
+                _unitOfWork.Save();
 
                 return Ok();
             }
