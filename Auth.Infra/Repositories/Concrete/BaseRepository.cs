@@ -62,7 +62,7 @@ namespace Auth.Infra.Repositories.Concrete
 
         public IQueryable<T> GetWithIncludeAndWhere(Expression<Func<T, object>> include, Func<T, bool> where)
         {
-            return _dbSet.Include(include).Where(where).AsQueryable(); ;
+            return _dbSet.Include(include).Where(where).AsQueryable();
         }
 
         public T GetWithIncludeAndSingleOrDefault(Expression<Func<T, object>> include, Func<T, bool> singleOrDefault)

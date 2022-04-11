@@ -2,7 +2,7 @@
 {
     public class BaseConfigurations
     {
-        public string ConnectionString_authdb { get; set; }
-        public string SecretKey { get; set; }
+        public string ConnectionString_authdb { get; set; } = null!;
+        public string SecretKey { get; set; } = null!;
     }
 }

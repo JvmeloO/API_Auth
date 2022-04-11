@@ -1,7 +1,6 @@
 ﻿using Auth.API.Models.DTOs;
 using Auth.Business.Services.Abstract;
 using Auth.Infra.Repositories.Abstract;
-using Auth.Infra.UnitOfWork.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,16 +11,14 @@ namespace Auth.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenService _tokenService;
         private readonly IEncryptService _encryptService;
         private readonly IPasswordRecoveryService _passwordRecoveryService;
 
-        public AuthController(IUserRepository userRepository, IUnitOfWork unitOfWork, ITokenService tokenService,
+        public AuthController(IUserRepository userRepository, ITokenService tokenService,
             IEncryptService encryptService, IPasswordRecoveryService passwordRecoveryService)
         {
             _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
             _tokenService = tokenService;
             _encryptService = encryptService;
             _passwordRecoveryService = passwordRecoveryService;
