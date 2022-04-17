@@ -54,8 +54,8 @@ namespace Auth.Business.Services.Concrete
 
         public void NewPassword(PasswordRecoveryNewPasswordServiceDTO passwordRecoveryNewPasswordServiceDTO, User user) 
         {
-            var emailSent = _emailSentRepository.GetWithIncludeAndWhere(e => e.EmailTemplate, e => e.RecipientEmail == passwordRecoveryNewPasswordServiceDTO.Email
-            && e.EmailTemplate.TemplateName == _templateName && e.SendDate.AddMinutes(verificationCodeMinuteExpiration) > DateTime.Now)
+            var emailSent = _emailSentRepository.GetWithWhereAndIncludes(e => e.RecipientEmail == passwordRecoveryNewPasswordServiceDTO.Email
+            && e.EmailTemplate.TemplateName == _templateName && e.SendDate.AddMinutes(verificationCodeMinuteExpiration) > DateTime.Now, e => e.EmailTemplate)
                 .OrderByDescending(e => e.SendDate).FirstOrDefault();
 
             if (emailSent == null)

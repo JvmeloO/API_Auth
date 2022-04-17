@@ -42,12 +42,7 @@ namespace Auth.Infra.Repositories.Concrete
 
         public IQueryable<T> GetAllWithIncludes(params Expression<Func<T, object>>[] includes)
         {
-            var result = _dbSet.AsQueryable();
-
-            foreach (var include in includes)
-                result = result.Include(include);
-
-            return result;
+            return includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
         }
 
         public T GetWithSingleOrDefault(Func<T, bool> singleOrDefault)
@@ -60,9 +55,12 @@ namespace Auth.Infra.Repositories.Concrete
             return _dbSet.Where(where).AsQueryable();
         }
 
-        public IQueryable<T> GetWithIncludeAndWhere(Expression<Func<T, object>> include, Func<T, bool> where)
+        // Example Parameters: (w => w.Where == where, i => i.Navigation1, i => i.Navigation2, i => i.Navigation3)
+        public IQueryable<T> GetWithWhereAndIncludes(Func<T, bool> where, params Expression<Func<T, object>>[] includes)
         {
-            return _dbSet.Include(include).Where(where).AsQueryable();
+            var result = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
+
+            return result.Where(where).AsQueryable();
         }
 
         public T GetWithIncludeAndSingleOrDefault(Expression<Func<T, object>> include, Func<T, bool> singleOrDefault)

@@ -49,7 +49,7 @@ namespace Auth.API.Controllers
         {
             try
             {
-                var roles = _roleRepository.GetWithIncludeAndWhere(r => r.Users, r => r.Users.Any(u => u.Username == username));
+                var roles = _roleRepository.GetWithWhereAndIncludes(r => r.Users.Any(u => u.Username == username), r => r.Users);
                 return Ok(roles.Select(r => RoleMap.EntityToResultDTO(r)).ToList());
             }
             catch (Exception ex)

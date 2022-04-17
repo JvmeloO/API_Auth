@@ -42,7 +42,7 @@ namespace Auth.Business.Services.Concrete
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email)
             };
-            var userRoles = _roleRepository.GetWithIncludeAndWhere(r => r.Users, r => r.Users.Any(u => u.UserId == user.UserId));
+            var userRoles = _roleRepository.GetWithWhereAndIncludes(r => r.Users.Any(u => u.UserId == user.UserId), r => r.Users);
             if (userRoles != null)
                 claims.AddRange(from role in userRoles
                                 select (new Claim(ClaimTypes.Role, role.RoleName)));
